@@ -17,5 +17,12 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+                sh 'docker built -t jenkins-ci-demo:latest .'
+            }
+        }
+
     }
 }
