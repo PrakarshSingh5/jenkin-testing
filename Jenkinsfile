@@ -23,6 +23,18 @@ pipeline {
                 sh 'docker build -t jenkins-ci-demo:latest .'
             }
         }
+        stage('Deploy') {
+    steps {
+        sh '''
+        docker stop jenkins-ci-demo || true
+        docker rm jenkins-ci-demo || true
 
+        docker run -d \
+            --name jenkins-ci-demo \
+            -p 3000:3000 \
+            jenkins-ci-demo:latest
+        '''
+    }
+}
     }
 }
