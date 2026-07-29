@@ -20,9 +20,27 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker Image...'
-                sh 'docker build -t jenkins-ci-demo:latest .'
+                sh 'docker build -t prakarsh321/jenkins-ci-demo:latest .'
             }
         }
+        stage('Login to Docker Hub') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'DOCKER_USERNAME',
+            passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+            sh '''
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            '''
+        }
+    }
+}
+stage('Push Docker Image') {
+    steps {
+        sh 'docker push prakarsh321/jenkins-ci-demo:latest'
+    }
+}
         stage('Deploy') {
     steps {
         sh '''
@@ -32,7 +50,7 @@ pipeline {
         docker run -d \
             --name jenkins-ci-demo \
             -p 3000:3000 \
-            jenkins-ci-demo:latest
+            prakarsh321/jenkins-ci-demo:latest
         '''
     }
 }
